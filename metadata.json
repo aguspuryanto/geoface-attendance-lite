@@ -1,0 +1,8 @@
+{
+  "name": "GeoFace Attendance System",
+  "description": "Sistem Absensi Pegawai modern dengan Face Recognition, GPS Geofencing, Payroll, dan Manajemen Cuti.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
