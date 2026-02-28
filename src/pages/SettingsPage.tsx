@@ -178,8 +178,8 @@ export const SettingsPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto -mx-6 px-6">
+              <table className="w-full min-w-[600px]">
                 <thead>
                   <tr className="text-left border-b border-zinc-100">
                     <th className="pb-4 font-semibold text-zinc-500 text-sm">Nama Lengkap</th>
