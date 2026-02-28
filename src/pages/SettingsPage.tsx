@@ -6,7 +6,8 @@ import {
   Map as MapIcon, 
   Save,
   Plus,
-  Trash2
+  Trash2,
+  Clock
 } from 'lucide-react';
 import { OfficeSettings, User } from '../types';
 
@@ -19,6 +20,18 @@ export const SettingsPage: React.FC = () => {
   const [shifts, setShifts] = useState<any[]>([]);
   const [showAddShift, setShowAddShift] = useState(false);
   const [newShift, setNewShift] = useState({ name: '', start_time: '', end_time: '' });
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [newUser, setNewUser] = useState({
+    username: '',
+    password: '',
+    full_name: '',
+    role: 'employee',
+    department: '',
+    base_salary: 0
+  });
 
   useEffect(() => {
     fetchData();
