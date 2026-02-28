@@ -30,7 +30,8 @@ export const SettingsPage: React.FC = () => {
     full_name: '',
     role: 'employee',
     department: '',
-    base_salary: 0
+    base_salary: 0,
+    shift_id: ''
   });
 
   useEffect(() => {
@@ -54,6 +55,13 @@ export const SettingsPage: React.FC = () => {
     setShowAddShift(false);
     fetchShifts();
     setNewShift({ name: '', start_time: '', end_time: '' });
+  };
+
+  const handleDeleteShift = async (id: number) => {
+    if (confirm('Hapus shift ini?')) {
+      await fetch(`/api/shifts/${id}`, { method: 'DELETE' });
+      fetchShifts();
+    }
   };
 
   const fetchData = async () => {
@@ -87,7 +95,7 @@ export const SettingsPage: React.FC = () => {
     if (res.ok) {
       setShowAddUser(false);
       fetchData();
-      setNewUser({ username: '', password: '', full_name: '', role: 'employee', department: '', base_salary: 0 });
+      setNewUser({ username: '', password: '', full_name: '', role: 'employee', department: '', base_salary: 0, shift_id: '' });
     }
   };
 
@@ -234,9 +242,17 @@ export const SettingsPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {shifts.map((shift) => (
-                <div key={shift.id} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
-                  <h3 className="font-bold text-zinc-900">{shift.name}</h3>
-                  <p className="text-sm text-zinc-500">{shift.start_time} - {shift.end_time}</p>
+                <div key={shift.id} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-zinc-900">{shift.name}</h3>
+                    <p className="text-sm text-zinc-500">{shift.start_time} - {shift.end_time}</p>
+                  </div>
+                  <button 
+                    onClick={() => handleDeleteShift(shift.id)}
+                    className="p-2 text-zinc-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               ))}
               {shifts.length === 0 && (
@@ -366,6 +382,19 @@ export const SettingsPage: React.FC = () => {
                     onChange={(e) => setNewUser({ ...newUser, base_salary: Number(e.target.value) })}
                     className="w-full px-4 py-2 rounded-xl border border-zinc-200 outline-none focus:ring-2 focus:ring-emerald-500"
                   />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium mb-1">Shift Kerja</label>
+                  <select
+                    value={newUser.shift_id}
+                    onChange={(e) => setNewUser({ ...newUser, shift_id: e.target.value })}
+                    className="w-full px-4 py-2 rounded-xl border border-zinc-200 outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">Pilih Shift</option>
+                    {shifts.map(s => (
+                      <option key={s.id} value={s.id}>{s.name} ({s.start_time} - {s.end_time})</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="flex gap-3 mt-6">

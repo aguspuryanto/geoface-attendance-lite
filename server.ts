@@ -20,7 +20,9 @@ db.exec(`
     face_descriptor TEXT, -- JSON string of face features
     department TEXT,
     base_salary REAL DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    shift_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(shift_id) REFERENCES shifts(id)
   );
 
   CREATE TABLE IF NOT EXISTS shifts (
@@ -59,6 +61,12 @@ db.exec(`
     value TEXT
   );
 `);
+
+try {
+  db.exec("ALTER TABLE users ADD COLUMN shift_id INTEGER REFERENCES shifts(id)");
+} catch (e) {
+  // Column already exists or other error
+}
 
 // Seed default admin and settings
 const adminExists = db.prepare("SELECT * FROM users WHERE username = ?").get("admin");
@@ -101,10 +109,10 @@ async function startServer() {
   });
 
   app.post("/api/users", (req, res) => {
-    const { username, password, full_name, role, department, base_salary } = req.body;
+    const { username, password, full_name, role, department, base_salary, shift_id } = req.body;
     try {
-      const result = db.prepare("INSERT INTO users (username, password, full_name, role, department, base_salary) VALUES (?, ?, ?, ?, ?, ?)").run(
-        username, password, full_name, role, department, base_salary
+      const result = db.prepare("INSERT INTO users (username, password, full_name, role, department, base_salary, shift_id) VALUES (?, ?, ?, ?, ?, ?, ?)").run(
+        username, password, full_name, role, department, base_salary, shift_id
       );
       res.json({ success: true, id: result.lastInsertRowid });
     } catch (e) {
@@ -189,6 +197,11 @@ async function startServer() {
     const { name, start_time, end_time } = req.body;
     const result = db.prepare("INSERT INTO shifts (name, start_time, end_time) VALUES (?, ?, ?)").run(name, start_time, end_time);
     res.json({ success: true, id: result.lastInsertRowid });
+  });
+
+  app.delete("/api/shifts/:id", (req, res) => {
+    db.prepare("DELETE FROM shifts WHERE id = ?").run(req.params.id);
+    res.json({ success: true });
   });
 
   // Vite middleware for development
